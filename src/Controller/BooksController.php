@@ -47,28 +47,29 @@ class BooksController extends AbstractController
     }
 
     #[Route('/api/books', name:"createBook", methods: ['POST'])]
-    public function createBook(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator, AuthorRepository $authorRepository): JsonResponse 
+    public function createBook(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator, AuthorRepository $authorRepository, ValidatorInterface $validator): JsonResponse 
     {
         $book = $serializer->deserialize($request->getContent(), Books::class, 'json');
+        
+        // On vérifie les erreurs
+        $errors = $validator->validate($book);
 
-        // Récupération de l'ensemble des données envoyées sous forme de tableau
-        $content = $request->toArray();
-
-        // Récupération de l'idAuthor. S'il n'est pas défini, alors on met -1 par défaut.
-        $idAuthor = $content['idAuthor'] ?? -1;
-
-        // On cherche l'auteur qui correspond et on l'assigne au livre.
-        // Si "find" ne trouve pas l'auteur, alors null sera retourné.
-        $book->setAuthor($authorRepository->find($idAuthor));
-     
+        if ($errors->count() > 0) {
+            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        }
+    
         $em->persist($book);
         $em->flush();
 
+        $content = $request->toArray();
+        $idAuthor = $content['idAuthor'] ?? -1;
+    
+        $book->setAuthor($authorRepository->find($idAuthor));
         $jsonBook = $serializer->serialize($book, 'json', ['groups' => 'getBooks']);
-
         $location = $urlGenerator->generate('detailBook', ['id' => $book->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return new JsonResponse($jsonBook, Response::HTTP_CREATED, ["Location" => $location], true);
+
     }
 
     #[Route('/api/books/{id}', name:"updateBook", methods:['PUT'])]
