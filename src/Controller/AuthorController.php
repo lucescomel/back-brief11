@@ -51,17 +51,17 @@ class AuthorController extends AbstractController
     }
 
     #[Route('/api/authors', name: "createAuthor", methods: ['POST'])]
-    public function createAuthor(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator , UrlGeneratorInterface $urlGenerator): JsonResponse
+    public function createAuthor(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
 
         $author = $serializer->deserialize($request->getContent(), Author::class, 'json');
 
-         // On vérifie les erreurs
-         $errors = $validator->validate($author);
+        // On vérifie les erreurs
+        $errors = $validator->validate($author);
 
-         if ($errors->count() > 0) {
-             return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
-         }
+        if ($errors->count() > 0) {
+            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        }
 
         $em->persist($author);
         $em->flush();
@@ -73,21 +73,17 @@ class AuthorController extends AbstractController
         return new JsonResponse($jsonAuthor, Response::HTTP_CREATED, ["Location" => $location], true);
     }
 
-
-//     #[Route('/api/authors/{id}', name:"updateAuthor", methods:['PUT'])]
-
-//     public function updateAuthor(Request $request, SerializerInterface $serializer, Author $currentBook, EntityManagerInterface $em, AuthorRepository $authorRepository): JsonResponse 
-//     {
-//         $updatedBook = $serializer->deserialize($request->getContent(), 
-//                 Author::class, 
-//                 'json', 
-//                 [AbstractNormalizer::OBJECT_TO_POPULATE => $currentBook]);
-//         $content = $request->toArray();
-//         $idAuthor = $content['idAuthor'] ?? -1;
-//         $updatedBook->setAuthor($authorRepository->find($idAuthor));
-        
-//         $em->persist($updatedBook);
-//         $em->flush();
-//         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
-//    }
+    #[Route('/api/authors/{id}', name: "updateAuthor", methods: ['PUT'])]
+    public function updateAuthor(Request $request, SerializerInterface $serializer, Author $currentAuthor, EntityManagerInterface $em): JsonResponse
+    {
+        $updatedAuthor = $serializer->deserialize(
+            $request->getContent(),
+            Author::class,
+            'json',
+            [AbstractNormalizer::OBJECT_TO_POPULATE => $currentAuthor]
+        );
+        $em->persist($updatedAuthor);
+        $em->flush();
+        return new JsonResponse("Modification prise en compte", JsonResponse::HTTP_CREATED);
+    }
 }
