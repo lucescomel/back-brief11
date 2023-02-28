@@ -26,18 +26,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
-    
-    /**
-     * Méthode getUsername qui permet de retourner le champ qui est utilisé pour l'authentification.
-     *
-     * @return string
-     */
-    public function getUsername(): string {
-        return $this->getUserIdentifier();
-    }
-
-
-
 
     public function getId(): ?int
     {
@@ -107,5 +95,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * Méthode getUsername qui permet de retourner le champ qui est utilisé pour l'authentification.
+     *
+     * @return string
+     */
+    public function getUsername(): string {
+        return $this->getUserIdentifier();
     }
 }
