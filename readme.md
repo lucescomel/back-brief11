@@ -25,7 +25,7 @@ ADMIN
 créer un livre :
 
 {
-    "title":"dqfdsgbgn",
-    "coverText": "qrefsghdjnergs",
-    "idAuthor":21
+   "title": "Le Silmarillion",
+   "coverText": "Beren et Lúthien et autres histoires",
+   "idAuthor" : 5
 }
