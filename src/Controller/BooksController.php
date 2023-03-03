@@ -74,7 +74,7 @@ class BooksController extends AbstractController
 
     }
 
-    #[Route('/api/books/{id}', name:"updateBook", methods:['PUT'])]
+    #[Route('/api/books/{id}', name:"updateBook", methods:['PATCH'])]
 
     public function updateBook(Request $request, SerializerInterface $serializer, Books $currentBook, EntityManagerInterface $em, AuthorRepository $authorRepository): JsonResponse 
     {
